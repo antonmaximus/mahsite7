@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var autoprefixer = require('gulp-autoprefixer');
 var sourcemaps = require('gulp-sourcemaps');
+var fileinclude = require('gulp-file-include');
 var browserSync = require('browser-sync');
 var useref = require('gulp-useref');
 var uglify = require('gulp-uglify');
@@ -31,9 +32,28 @@ gulp.task('browserSync', function() {
 // Watchers
 gulp.task('watch', function() {
   gulp.watch('app/css/**/*', browserSync.reload);
-  gulp.watch('app/*.html', browserSync.reload);
+  // gulp.watch('app/*.html', browserSync.reload);
   gulp.watch('app/js/**/*.js', browserSync.reload);
+  gulp.watch('app/templates/**/*.html', ['makehtml']);
 })
+
+// Concatenate HTML files
+gulp.task('makehtml', function() {
+  gulp.src(['app/templates/index.html'])
+    .pipe(fileinclude({
+      prefix: '@@',
+      basepath: '@file',
+      context: {
+        name: 'example'
+      }
+    }))
+    .pipe(gulp.dest('app'))
+    .pipe(browserSync.reload({ // Reloading with Browser Sync
+      stream: true
+    }));
+});
+
+
 
 // Optimization Tasks 
 // ------------------
@@ -91,7 +111,7 @@ gulp.task('clean:dist', function() {
 // ---------------
 
 gulp.task('default', function(callback) {
-  runSequence(['browserSync', 'watch'],
+  runSequence(['makehtml', 'browserSync', 'watch'],
     callback
   )
 })
@@ -99,7 +119,7 @@ gulp.task('default', function(callback) {
 gulp.task('build', function(callback) {
   runSequence(
     'clean:dist',
-    ['useref', 'images', 'fonts', 'fontawesome', 'copyjs'],
+    ['makehtml', 'useref', 'images', 'fonts', 'fontawesome', 'copyjs'],
     callback
   )
 })
