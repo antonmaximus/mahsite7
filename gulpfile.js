@@ -4,6 +4,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var fileinclude = require('gulp-file-include');
 var browserSync = require('browser-sync');
 var useref = require('gulp-useref');
+var htmlmin = require('gulp-htmlmin');
 var uglify = require('gulp-uglify');
 var gulpIf = require('gulp-if');
 var cssnano = require('gulp-cssnano');
@@ -60,12 +61,17 @@ gulp.task('makehtml', function() {
 
 // Optimizing CSS and JavaScript 
 gulp.task('useref', function() {
-
   return gulp.src('app/*.html')
     .pipe(useref())
     .pipe(gulpIf('*.js', uglify()))
     .pipe(gulpIf('*.css', cssnano()))
     .pipe(gulp.dest('dist'));
+});
+
+gulp.task('minifyhtml', function() {
+  return gulp.src('dist/index.html')
+    .pipe(htmlmin({collapseWhitespace: true, removeComments: true}))
+    .pipe(gulp.dest('dist'))
 });
 
 // Copying specific JS files 
@@ -77,7 +83,7 @@ gulp.task('copyjs', function() {
 
 // Optimizing Images 
 gulp.task('images', function() {
-  return gulp.src('app/images/**/*.+(png|jpg|jpeg|gif|svg)')
+  return gulp.src('app/images/**/*.+(png|jpg|jpeg|gif|svg|ico)')
     // Caching images that ran through imagemin
     .pipe(cache(imagemin({
       interlaced: true,
@@ -119,7 +125,10 @@ gulp.task('default', function(callback) {
 gulp.task('build', function(callback) {
   runSequence(
     'clean:dist',
-    ['makehtml', 'useref', 'images', 'fonts', 'fontawesome', 'copyjs'],
+    'makehtml', 
+    ['images', 'fonts', 'fontawesome', 'copyjs'],
+    'useref', 
+    'minifyhtml',
     callback
   )
 })
