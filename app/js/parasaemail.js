@@ -11,7 +11,8 @@
 
 
     var command2 = "te" + ibalikAngKasunod('k') + ":",
-        address2 = "979-" + "77" + ibalikAngKasunod("2") + "-" + "300" + ibalikAngKasunod("6");
+        //address2 = "979-" + "77" + ibalikAngKasunod("2") + "-" + "300" + ibalikAngKasunod("6");
+        address2 = "512-" + "55" + ibalikAngKasunod("2") + "-" + "388" + ibalikAngKasunod("2");
     document.getElementById("tawagdini").innerHTML = address2;
     document.getElementById("tawagdinihref").href = command2 + address2;
 })();
